@@ -32,9 +32,9 @@ DOM其实也是一种节点，为comment类型，Nodetype为8。
 
  `parentNode`  指向该节点的父节点 
  
-  `previousNode` 指向该节点的上一个同胞节点 如果该节点为第一个则为null
+  `previousSibling` 指向该节点的上一个同胞节点 如果该节点为第一个则为null
   
-  `nextNode` 指向该节点的下一个同胞节点 与上同理
+  `nextSibling` 指向该节点的下一个同胞节点 与上同理
  
   `firstChild` 指向该节点的第一个子节点 等同于`someNode.childNodes[0]`
   
@@ -157,9 +157,10 @@ p263指出了所有HTML元素的类型（都基于HTMLElement）
 
 ### 取得特性
 每个元素都会有特性，其用途在于给出相应元素或其内容的附加信息。操作特性的主要方法有三个,可以针对于任何特性。
-`getAttribute("class")` 
+`getAttribute("class")//不需要加上className` 
 `setAttribute()` 
 `removeAttribute()`
+
 特性的名称是不区分大小写的，自定义特性应加上data-前缀
 
 

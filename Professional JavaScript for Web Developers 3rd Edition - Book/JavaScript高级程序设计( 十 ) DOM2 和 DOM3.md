@@ -213,7 +213,7 @@ DOM2级遍历和范围定义了两个用于完成顺序遍历DOM结构的类型 
 NodeIterator类型是两者中比较简单的一个，可以使用`document.createNodeIterator()`来创建他的新实例，他有一下四个参数
 `root` 想要作为起点的树的节点
 `whatToShow` 表示要访问那些节点的数字代码`p328`
-`filter` 是一个NodeFilter对象，或者是一个表示应该接受还是拒绝某种特定节点的函数
+`filter` 是一个NodeFilter对象，或者是一个表示应该接受还是拒绝某种特定节点的函数（一个类似过滤器的东西）
 最后一个在HTML文档中无效
 
 以下的代码创建了一个能够访问所有类型节点的NodeIterator
@@ -228,3 +228,71 @@ NodeIterator类型的两个主要方法是nextNode()和previousNode()，在DOM�
 	alert(dom_tree.nextNode().nodeValue); //10
 
 迭代器似乎是一个快照，他并不具备动态性，不是类似与NodeList的东西
+
+## TreeWalker ##
+TreeWalker是NodeIterator的一个更高级的版本，除了包括nextNode()和PreviousNode()还包括一下在不同方向上游走的方法
+- `parentNode()` 遍历到当前节点的父节点
+- `firstChild()` 遍历到当前节点的第一个子节点
+- `lastChild()`  遍历到当前节点的最后一个子节点
+- `nextSibling()` 遍历到当前节点的下一个同辈节点
+- `previousSibling()` 遍历到当前节点的上一个同辈节点
+
+创建TreeWalker对象要使用 `document.createTreeWalker();` 其参数与NodeIterator相同
+
+TreeWalker与节点迭代器之间的差距在于treeWalker提供了随意游走的方法，能够在DOM结构中沿任何方向移动。
+
+# 范围 #
+为了让开发人员更方便的控制页面，DOM2级定义了范围接口，通过范围可以选中文档中的一个区域。
+
+## DOM中的范围 ##
+DOM2级在Document类型中定义了createRange方法（）
+这个方法属于document对象。使用hasFeature()可以检测浏览器是是否支持这个方法
+
+`var range = document.createRange()` 此时的范围里是不包含任何DOM块的
+
+每个范围都是一个Range类的实例，这个实例拥有一些属性和方法，
+`p322`
+
+### 使用DOM范围实现简单选择 ###
+有如下两个比较简单的方式来让范围去选中文档中一部分
+- `selectNode()` 
+- `selectNodeContents()`
+
+这两个方法都接受一个参数，一个DOM节点，然后使用该节点中的信息来填充范围。其中`selectNode()`选中该节点自身和他的子节点，而 `selectNodeContents()` 只选择该节点的子节点
+
+对选区进行精确的控制`p333`
+
+### 使用DOM范围实现复杂选择 ###
+`p334`
+
+### 操作DOM范围中的内容 ###
+范围内部中的所有文档节点，都指向实际文档中的节点
+第一个方法是`deleteContents()` 删除范围所包含的内容 会体现在实际的文档之中
+第二个方法类似`deleteContents()` `extractContents()`不同是他会范围删除的内容，你可以把返回的内容删除到其他地方之中
+`cloneContents`可以返回一个范围对象的副本
+
+### 插入DOM范围中的内容 ###
+`insertNode`方法可以向范围选区开始处插入一个节点，（经测试，如果你是用选择selectNode添加内容，会添加到这个节点之前）
+由于这个范围和实际DOM是一一对应的关系，所以你修改范围中的内容会立即体现在DOM之中。
+
+- 折叠范围 `p339`
+- 比较范围 `p339`
+- 复制范围 `p340`
+- 清理范围 `p340`
+
+
+## IE 中的范围 ##
+p`340`
+
+# 小结 #
+DOM2级模块主要针对操作元素样式信息而开发，其特性简要总结如下。
+- 每个元素都有一个相关联的style对象，可以用来确定和修改行内的样式
+- 要确定一个元素的计算样式（和Chrome-debug工具里的元素样式类似）可以使用   `getComputedStyle方法`
+- IE不支持上诉的计算方法，但支持currentStyle属性
+- 可以用过document.styleSheets集合访问样式表
+
+
+DOM二级遍历和范围提供了与DOM结构交互的不同方式
+- 使用NodeIterator或TreeWalker对DOM执行深度优先的遍历（后者更加支持自定义的移动方式）
+- 范围是选择DOM中的特定部分，然后我们可以对这些部分执行一些操作
+- 使用范围选取可以让我在删除文档中的一部分，并且保持文档结构的格式良好。或者复制文档中的相应部分

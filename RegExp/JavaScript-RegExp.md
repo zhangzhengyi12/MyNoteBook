@@ -108,8 +108,81 @@ JS不支持后顾
 
 ## 正则方法 ##
 
-### test方法 ###
+### test ###
 `RegExp.prototype.test(str)`
 用于测试字符串参数中是否存在匹配正则表达式模式的字符串
 如果存在则返回true, 否则返回false
-在test过程中，可能会出现ture和false
+在test过程中，可能会出现ture和false，这是因为test方法是检测是否存在，所以并不需要选中全局，那么在加上了全局的情况之下，多次执行test可能会导致正则对象的lastIndex不断变化，当lastIndex不再存在的时候，就会返回flase,之后Last被重置
+
+test的本意是为了是否存在，可以取消g标志。
+
+### exec ###
+
+`RegExp.prototype.exec(str)`
+
+使用正则表达式模式对字符串执行搜索，并将更新全局 RegExp的属性(lastIndex)以反映匹配结果
+
+如果没有返回匹配的文本则返回null,否则返回一个数组,数组有以下key
+
+- index 声明匹配文本的第一个字符的位置
+- input存放被检索的字符串String
+- 匹配到的项目以及子正则（分组匹配，如果有）的字符串，这些key通常为数字
+
+
+	
+		var reg = /(\w)(\d)/g;
+		var string = "a1b2c3d4";
+		
+		var ret;
+		
+		//console.log(ret.index + \n + reg.lastIndex + ret.toString);
+		
+		while(ret = reg.exec(string)){
+		console.log(ret.index+ "找到首个位置" + "\t" + reg.lastIndex+ "下次开始查找的位置" + "\t" + ret);
+		}
+
+		"0找到首个位置  2下次开始查找的位置  a1,a,1"
+		"2找到首个位置  4下次开始查找的位置  b2,b,2"
+		"4找到首个位置  6下次开始查找的位置  c3,c,3"
+		"6找到首个位置  8下次开始查找的位置  d4,d,4"
+
+**需要注意的是，不要在循环内部调用exec,直接打印缓冲器ret的属性，如果调用就会再次触发lastindex跳动，这样会少遍历一半的次数**
+
+
+---
+
+### search ###
+
+    `String.prototype.search(reg)`
+- search（）方法用于检索字符串中指定的子字符串，如果参数非正则，尝试转换成正则表达式。
+- 方法返回第一个匹配 index,查找不到返回-1.k
+
+ 
+
+### match ###
+ 
+    `String.prototype.match(reg)`
+
+- match() 方法将解锁字符串，以找到一个或多个与regexp匹配的文本
+- regexp是否具有标志g对接过影响很大
+
+
+### split ###
+
+    `String.prototype.split(reg)`
+用split方法可以把字符串分割为字符串数组 参数为字符或者是正则表达式 用作分割的部分会被忽略
+
+与Array的Join方法正好相反，join是把一个数组转换成字符串
+
+### replace ###
+字符串的replace方法，参数有两个 要找谁 替换成什么
+
+- `String.prototype.replace(str,replaceStr);`
+- `String.prototype.replace(str,replaceStr);`
+- `String.prototype.replace(reg,function);`
+
+function实质上是将一个函数的返回值当成替换字符，那么就有四个传进去的函数，每次找到匹配结果就调用一次这个函数
+- 匹配字符串
+- 正则表达式分组内容，没有分组则没有该参数
+- 匹配项在字符串中 index
+- 原字符串
